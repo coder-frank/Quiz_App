@@ -12,43 +12,40 @@ class QuizController extends Controller
 
     public function index($round = 1)
     {
-        // Fetch all questions
+        // Fetch all questions for the current round
         $questions = Question::where('round_number', $round)->get();
 
         switch ($round) {
             case '1':
-                $departments = Department::all()->map(function ($department) {
-                    $department->total_points = $department->totalPoints();
+                $departments = Department::all()->map(function ($department) use ($round) {
+                    $department->total_points = $department->totalPointsForRound($round);
                     return $department;
                 });
                 break;
 
             case '2':
-                $departments = Department::where('status', '2')->get()->map(function ($department) {
-                    $department->total_points = $department->totalPoints();
+                $departments = Department::where('selected_for_next_round', true)->get()->map(function ($department) use ($round) {
+                    $department->total_points = $department->totalPointsForRound($round);
                     return $department;
                 });
                 break;
 
             case '3':
-                $departments = Department::where('status', '1')->get()->map(function ($department) {
-                    $department->total_points = $department->totalPoints();
+                $departments = Department::where('selected_for_next_round', true)->get()->map(function ($department) use ($round) {
+                    $department->total_points = $department->totalPointsForRound($round);
                     return $department;
                 });
                 break;
 
             default:
                 return response()->json(['message' => 'Round not available']);
-                break;
         }
-
 
         // Fetch the most recently answered question from PlayerResponse
         $lastResponse = PlayerResponse::latest('created_at')->first();
         $currentDepartment = null;
 
         if ($lastResponse) {
-            // Find the department after the most recent response's department
             $lastDepartmentId = $lastResponse->department_id;
             $currentDepartmentIndex = $departments->search(function ($department) use ($lastDepartmentId) {
                 return $department->id == $lastDepartmentId;
@@ -58,24 +55,20 @@ class QuizController extends Controller
             $nextDepartmentIndex = ($currentDepartmentIndex + 1) % $departments->count();
             $currentDepartment = $departments[$nextDepartmentIndex];
         } else {
-            // If no responses yet, default to the first department
             $currentDepartment = $departments->first();
         }
 
-        // Fetch answered questions (question IDs)
         $answeredQuestions = PlayerResponse::pluck('question_id')->toArray();
 
-         // Check if all questions in the round have been answered by all departments
-         $totalQuestions = Question::where('round_number', $round)->count();
-         $answeredQ = PlayerResponse::distinct('question_id')->count();
-         $isDone = false;
- 
-         if ($answeredQ >= $totalQuestions) {
-            $isDone = true;
-         }
+        // Check if all questions in the current round have been answered
+        $totalQuestions = Question::where('round_number', $round)->count();
+        $answeredQ = PlayerResponse::whereIn('question_id', $questions->pluck('id'))->distinct('question_id')->count();
+        $isDone = $answeredQ >= $totalQuestions;
 
         return view('quiz', compact('questions', 'departments', 'currentDepartment', 'answeredQuestions', 'round', 'isDone'));
     }
+
+
 
 
     public function getQuestion($id)
@@ -98,8 +91,7 @@ class QuizController extends Controller
 
         $question = Question::find($request->question_id);
 
-        if ($request->has('is_answered') && $request->is_answered == false)
-        {
+        if ($request->has('is_answered') && $request->is_answered == false) {
             $isCorrect = false;
         } else {
             $isCorrect = $question->correct_answer === $request->selected_answer;
@@ -140,9 +132,21 @@ class QuizController extends Controller
             }
 
             return response()->json(['is_correct' => $isCorrect, 'points_awarded' => $isCorrect ? $question->point : 0, 'latest_points' => $latestPoints, 'nextround' => true]);
-
         }
 
         return response()->json(['is_correct' => $isCorrect, 'points_awarded' => $isCorrect ? $question->point : 0, 'latest_points' => $latestPoints]);
+    }
+
+    public function selectNextRound(Request $request)
+    {
+        // Reset all departments
+        Department::query()->update(['selected_for_next_round' => false]);
+
+        // Set selected departments
+        if ($request->has('selected_departments')) {
+            Department::whereIn('id', $request->selected_departments)->update(['selected_for_next_round' => true]);
+        }
+
+        return redirect()->back()->with('success', 'Departments selected for the next round.');
     }
 }

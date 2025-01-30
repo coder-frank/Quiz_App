@@ -21,4 +21,13 @@ class Department extends Model
     {
         return $this->points()->sum('points');
     }
+
+    public function totalPointsForRound($round)
+    {
+        return PlayerResponse::where('department_id', $this->id)
+            ->whereHas('question', function ($query) use ($round) {
+                $query->where('round_number', $round);
+            })
+            ->sum('points');
+    }
 }

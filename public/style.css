@@ -1,0 +1,266 @@
+/* Global Styling */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, royalblue, skyblue);
+    overflow: hidden;
+    font-family: "Poppins", sans-serif;
+}
+
+/* Gradient Animation */
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(-45deg, royalblue, skyblue, royalblue);
+    background-size: 300% 300%;
+    animation: gradientMove 8s ease infinite;
+    z-index: -1;
+}
+
+/* Floating Animated Boxes */
+.floating-box {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    animation: floatAnimation linear infinite alternate;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* Floating Animation */
+@keyframes floatAnimation {
+    0% {
+        transform: translateY(0) translateX(0) scale(1);
+    }
+    50% {
+        transform: translateY(-20px) translateX(10px) scale(1.1);
+    }
+    100% {
+        transform: translateY(0) translateX(0) scale(1);
+    }
+}
+
+/* Position Floating Boxes */
+.floating-box:nth-child(1) {
+    top: 10%;
+    left: 10%;
+    animation-duration: 6s;
+}
+.floating-box:nth-child(2) {
+    top: 5%;
+    left: 50%;
+    animation-duration: 8s;
+}
+.floating-box:nth-child(3) {
+    bottom: 20%;
+    left: 15%;
+    animation-duration: 7s;
+}
+.floating-box:nth-child(4) {
+    bottom: 10%;
+    right: 20%;
+    animation-duration: 9s;
+}
+.floating-box:nth-child(5) {
+    top: 50%;
+    right: 30%;
+    animation-duration: 6.5s;
+}
+.floating-box:nth-child(6) {
+    top: 25%;
+    right: 10%;
+    animation-duration: 7.5s;
+}
+
+/* Card Styling */
+.card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+/* Score Badge */
+.badge {
+    font-size: 18px;
+    padding: 10px 15px;
+}
+
+/* Quiz Ball Buttons */
+.ball {
+    border-radius: 50%;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    font-size: 20px;
+    transition: transform 0.3s ease-in-out, background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ball:hover {
+    background: #0056b3;
+    transform: scale(1.2);
+}
+
+/* Button Styling */
+button {
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Overlay for Flower Burst */
+.flower-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    z-index: 1000;
+    pointer-events: none;
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* Active Overlay */
+.flower-overlay.active {
+    opacity: 1;
+    pointer-events: none;
+}
+
+/* Container for Flower Burst */
+.flower-burst {
+    position: relative;
+    width: 300px;
+    height: 300px;
+}
+
+/* Flower Elements */
+.flower {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: url("https://img.icons8.com/color/96/flower.png") center/contain;
+    opacity: 0;
+    animation: burst 1.5s ease-out forwards;
+}
+
+/* Flower Burst Animation */
+@keyframes burst {
+    0% {
+        opacity: 0;
+        transform: scale(0) translate(0, 0);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1.4) translate(var(--x), var(--y));
+    }
+}
+
+/* Modal Animations */
+.modal.fade .modal-dialog {
+    transform: translateY(-50px);
+    transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0);
+}
+
+/* Timer Styling */
+#quesionTimer {
+    font-size: 18px;
+    font-weight: bold;
+    color: red;
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .floating-box {
+        width: 50px;
+        height: 50px;
+    }
+
+    .ball {
+        width: 50px;
+        height: 50px;
+        font-size: 16px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .modal-content {
+        padding: 15px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
+/* Confetti Effect */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Hide Audio Element */
+audio {
+    display: none;
+}

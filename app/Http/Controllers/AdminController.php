@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     public function index(){
-        return view('admin');
+        $departments = Department::all();
+        return view('admin', compact('departments'));
     }
 
     public function addDepartment(Request $request) {

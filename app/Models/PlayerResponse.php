@@ -9,4 +9,9 @@ class PlayerResponse extends Model
 {
     use HasFactory;
     protected $fillable = ['department_id', 'question_id', 'is_correct', 'points'];
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }

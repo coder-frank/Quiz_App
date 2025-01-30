@@ -1,0 +1,209 @@
+/* Global Styling */
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(120deg, #2980b9, #6dd5fa);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Animated Background */
+@keyframes backgroundAnimation {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 500px 0;
+    }
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url("https://static.tumblr.com/03fbbc566b081016810402488936fbae/pqpk3dn/MRSmlzpj3/tumblr_static_bg3.png")
+        repeat;
+    background-size: cover;
+    opacity: 0.9;
+    z-index: -1;
+    animation: backgroundAnimation 15s linear infinite;
+}
+
+/* Floating Question Marks */
+.floating-icons {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.icon {
+    position: absolute;
+    font-size: 60px;
+    color: rgba(255, 255, 255, 0.5);
+    animation: floatAnimation linear infinite;
+}
+
+/* Randomized Position & Animation */
+.icon:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    animation-duration: 6s;
+}
+.icon:nth-child(2) {
+    top: 40%;
+    left: 80%;
+    animation-duration: 8s;
+}
+.icon:nth-child(3) {
+    bottom: 20%;
+    left: 30%;
+    animation-duration: 7s;
+}
+.icon:nth-child(4) {
+    bottom: 10%;
+    right: 40%;
+    animation-duration: 9s;
+}
+.icon:nth-child(5) {
+    top: 50%;
+    right: 20%;
+    animation-duration: 6.5s;
+}
+.icon:nth-child(6) {
+    top: 20%;
+    right: 10%;
+    animation-duration: 7.5s;
+}
+.icon:nth-child(7) {
+    bottom: 80%;
+    right: 55%;
+    animation-duration: 9s;
+}
+.icon:nth-child(8) {
+    top: 70%;
+    right: 30%;
+    animation-duration: 6.5s;
+}
+.icon:nth-child(9) {
+    top: 60%;
+    left: 20%;
+    animation-duration: 7.5s;
+}
+
+
+/* Floating Animation */
+@keyframes floatAnimation {
+    0% {
+        transform: translateY(0);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateY(-30px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 0.8;
+    }
+}
+
+/* Welcome Box */
+.welcome-box {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    border-radius: 12px;
+    color: white;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-box h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.welcome-box .highlight {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.welcome-box p {
+    font-size: 16px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 20px;
+    background: #ffd700;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    margin-top: 10px;
+    transition: transform 0.2s ease-in-out, background 0.3s ease;
+}
+
+.btn:hover {
+    background: #ffb800;
+    transform: scale(1.1);
+}
+
+/* Developer Section */
+.developer-container {
+    margin-top: 30px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+}
+
+.developer-card {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    width: 190px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.developer-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid white;
+    transition: transform 0.3s ease-in-out;
+}
+
+.developer-card h3 {
+    color: white;
+    font-size: 20px;
+    margin-top: 10px;
+}
+
+.developer-card p {
+    color: #5eff00;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+/* Hover Effect */
+.developer-card:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.developer-card:hover img {
+    transform: scale(1.2);
+}

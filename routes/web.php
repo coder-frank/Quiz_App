@@ -30,3 +30,5 @@ Route::prefix('quiz')->group(function () {
     Route::post('/submit-answer', [QuizController::class, 'submitAnswer']);
     Route::get('/{round}', [QuizController::class, 'index']);
 });
+
+Route::post('/quiz/select-next-round', [QuizController::class, 'selectNextRound'])->name('quiz.selectNextRound');
