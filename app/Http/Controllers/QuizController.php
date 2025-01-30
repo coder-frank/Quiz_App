@@ -10,16 +10,38 @@ use Illuminate\Http\Request;
 class QuizController extends Controller
 {
 
-    public function index()
+    public function index($round = 1)
     {
         // Fetch all questions
         $questions = Question::where('round_number', $round)->get();
 
-        // Fetch all departments and calculate their total points
-        $departments = Department::all()->map(function ($department) {
-            $department->total_points = $department->totalPoints();
-            return $department;
-        });
+        switch ($round) {
+            case '1':
+                $departments = Department::all()->map(function ($department) {
+                    $department->total_points = $department->totalPoints();
+                    return $department;
+                });
+                break;
+
+            case '2':
+                $departments = Department::where('status', '2')->get()->map(function ($department) {
+                    $department->total_points = $department->totalPoints();
+                    return $department;
+                });
+                break;
+
+            case '3':
+                $departments = Department::where('status', '1')->get()->map(function ($department) {
+                    $department->total_points = $department->totalPoints();
+                    return $department;
+                });
+                break;
+
+            default:
+                return response()->json(['message' => 'Round not available']);
+                break;
+        }
+
 
         // Fetch the most recently answered question from PlayerResponse
         $lastResponse = PlayerResponse::latest('created_at')->first();
@@ -43,11 +65,17 @@ class QuizController extends Controller
         // Fetch answered questions (question IDs)
         $answeredQuestions = PlayerResponse::pluck('question_id')->toArray();
 
-        return view('quiz', compact('questions', 'departments', 'currentDepartment', 'answeredQuestions'));
+         // Check if all questions in the round have been answered by all departments
+         $totalQuestions = Question::where('round_number', $round)->count();
+         $answeredQ = PlayerResponse::distinct('question_id')->count();
+         $isDone = false;
+ 
+         if ($answeredQ >= $totalQuestions) {
+            $isDone = true;
+         }
+
+        return view('quiz', compact('questions', 'departments', 'currentDepartment', 'answeredQuestions', 'round', 'isDone'));
     }
-
-
-
 
 
     public function getQuestion($id)
@@ -62,12 +90,24 @@ class QuizController extends Controller
     {
         $request->validate([
             'question_id' => 'required|exists:questions,id',
-            'selected_answer' => 'required|string',
-            'department_id' => 'required|exists:departments,id'
+            'selected_answer' => 'nullable|string',
+            'department_id' => 'required|exists:departments,id',
+            'round' => 'required|integer',
+            'is_answered' => 'nullable',
         ]);
 
         $question = Question::find($request->question_id);
-        $isCorrect = $question->correct_answer === $request->selected_answer;
+
+        if ($request->has('is_answered') && $request->is_answered == false)
+        {
+            $isCorrect = false;
+        } else {
+            $isCorrect = $question->correct_answer === $request->selected_answer;
+        }
+
+        $round = $request->round;
+
+
 
         PlayerResponse::create([
             'department_id' => $request->department_id,
@@ -78,6 +118,30 @@ class QuizController extends Controller
 
         // Calculate the latest total points for the department
         $latestPoints = PlayerResponse::where('department_id', $request->department_id)->sum('points');
+
+
+        // Check if all questions in the round have been answered by all departments
+        $totalQuestions = Question::where('round_number', $round)->count();
+        $answeredQuestions = PlayerResponse::distinct('question_id')->count();
+
+        if ($answeredQuestions >= $totalQuestions) {
+            // Get the top 2 departments based on total points
+            $topDepartments = PlayerResponse::select('department_id')
+                ->groupBy('department_id')
+                ->selectRaw('SUM(points) as total_points')
+                ->orderByDesc('total_points')
+                ->limit(2)
+                ->pluck('department_id');
+
+            // Set status for departments
+            if ($topDepartments->count() > 0) {
+                Department::where('status', '!=', '1')->whereIn('id', $topDepartments)->update(['status' => 1]);
+                // Department::whereNotIn('id', $topDepartments)->update(['status' => 2]);
+            }
+
+            return response()->json(['is_correct' => $isCorrect, 'points_awarded' => $isCorrect ? $question->point : 0, 'latest_points' => $latestPoints, 'nextround' => true]);
+
+        }
 
         return response()->json(['is_correct' => $isCorrect, 'points_awarded' => $isCorrect ? $question->point : 0, 'latest_points' => $latestPoints]);
     }
