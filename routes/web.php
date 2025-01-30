@@ -28,5 +28,5 @@ Route::prefix('admin')->group(function () {
 Route::prefix('quiz')->group(function () {
     Route::get('/question/{id}', [QuizController::class, 'getQuestion']);
     Route::post('/submit-answer', [QuizController::class, 'submitAnswer']);
-    Route::get('/', [QuizController::class, 'index']);
+    Route::get('/{round}', [QuizController::class, 'index']);
 });

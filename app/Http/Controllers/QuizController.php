@@ -13,7 +13,7 @@ class QuizController extends Controller
     public function index($round)
     {
         // Fetch all questions
-        $questions = Question::all();
+        $questions = Question::where('round_number', $round)->get();
 
         // Fetch all departments and calculate their total points
         $departments = Department::all()->map(function ($department) {
