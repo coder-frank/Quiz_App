@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class QuizController extends Controller
 {
 
-    public function index($round)
+    public function index()
     {
         // Fetch all questions
         $questions = Question::all();
